@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>比价小站 · 多平台价格对比</title>
+  <!-- 使用 Inter 字体，干净现代 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+  <!-- 图标库 (feather icons 风格) 轻量级 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #f6f9fc;
+      color: #1a2b3c;
+      line-height: 1.4;
+      padding: 1.5rem;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .container {
+      max-width: 1300px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    /* 主卡片 */
+    .price-compare-card {
+      background: #ffffff;
+      border-radius: 32px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+      padding: 2rem 2rem 1.5rem;
+      transition: all 0.2s;
+      border: 1px solid rgba(255, 255, 255, 0.7);
+      backdrop-filter: blur(2px);
+    }
+
+    /* 头部 */
+    .header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .logo-area {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-icon {
+      background: #2e7d5e;
+      color: white;
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      box-shadow: 0 8px 16px -6px rgba(46, 125, 94, 0.3);
+    }
+
+    .logo-text h1 {
+      font-size: 1.6rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: #0b2b3c;
+    }
+
+    .logo-text p {
+      font-size: 0.85rem;
+      color: #5c6f7e;
+      font-weight: 500;
+    }
+
+    .stats-badge {
+      background: #eaf6f0;
+      color: #1d6b4c;
+      padding: 0.5rem 1rem;
+      border-radius: 40px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .stats-badge i {
+      font-size: 0.9rem;
+    }
+
+    /* 搜索/筛选栏 */
+    .search-section {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      align-items: center;
+    }
+
+    .search-wrapper {
+      flex: 2;
+      min-width: 240px;
+      position: relative;
+    }
+
+    .search-wrapper i {
+      position: absolute;
+      left: 18px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #8a9aa8;
+      font-size: 1rem;
+    }
+
+    .search-wrapper input {
+      width: 100%;
+      padding: 0.9rem 1rem 0.9rem 3rem;
+      border: 1.5px solid #e2e9f0;
+      border-radius: 60px;
+      font-size: 1rem;
+      font-family: 'Inter', sans-serif;
+      background: #ffffff;
+      transition: all 0.2s;
+      outline: none;
+      font-weight: 500;
+    }
+
+    .search-wrapper input:focus {
+      border-color: #2e7d5e;
+      box-shadow: 0 0 0 4px rgba(46, 125, 94, 0.1);
+    }
+
+    .category-filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .filter-chip {
+      background: #f0f4f8;
+      color: #2d4054;
+      padding: 0.6rem 1.2rem;
+      border-radius: 40px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+      border: 1px solid transparent;
+      white-space: nowrap;
+    }
+
+    .filter-chip.active {
+      background: #1d2e3b;
+      color: white;
+      border-color: #1d2e3b;
+      box-shadow: 0 6px 12px -6px rgba(0, 0, 0, 0.2);
+    }
+
+    .filter-chip:hover {
+      background: #e2eaf2;
+    }
+
+    .filter-chip.active:hover {
+      background: #0f1e28;
+    }
+
+    /* 排序控件 */
+    .sort-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 1.2rem;
+      gap: 0.8rem;
+    }
+
+    .result-count {
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: #4b6579;
+    }
+
+    .result-count strong {
+      color: #0e2b3a;
+      font-weight: 700;
+    }
+
+    .sort-options {
+      display: flex;
+      gap: 6px;
+      background: #f1f6fa;
+      padding: 4px;
+      border-radius: 40px;
+    }
+
+    .sort-btn {
+      background: transparent;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 40px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #4b6579;
+      cursor: pointer;
+      transition: all 0.15s;
+      font-family: 'Inter', sans-serif;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .sort-btn.active {
+      background: white;
+      color: #1d2e3b;
+      box-shadow: 0 4px 10px -4px rgba(0, 0, 0, 0.1);
+    }
+
+    .sort-btn i {
+      font-size: 0.7rem;
+    }
+
+    /* 表格/列表区域 */
+    .comparison-table {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 1rem;
+    }
+
+    .table-header {
+      display: grid;
+      grid-template-columns: 2.5fr 1.5fr 1.2fr 1.2fr 1.2fr 0.9fr;
+      padding: 0.75rem 1.2rem;
+      background: #f8fcff;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      color: #5b7a91;
+      border-bottom: 1px solid #e5eef5;
+    }
+
+    .product-row {
+      display: grid;
+      grid-template-columns: 2.5fr 1.5fr 1.2fr 1.2fr 1.2fr 0.9fr;
+      align-items: center;
+      background: white;
+      border-radius: 22px;
+      padding: 0.9rem 1.2rem;
+      transition: all 0.2s;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
+      border: 1px solid #edf3f9;
+    }
+
+    .product-row:hover {
+      border-color: #cbdae7;
+      box-shadow: 0 10px 20px -12px rgba(0, 0, 0, 0.15);
+      transform: scale(1.002);
+    }
+
+    .product-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .product-emoji {
+      font-size: 1.9rem;
+      line-height: 1;
+      background: #f2f8fd;
+      width: 48px;
+      height: 48px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .product-name {
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: #1a2e3f;
+      line-height: 1.3;
+    }
+
+    .product-desc {
+      font-size: 0.7rem;
+      color: #7995ab;
+      font-weight: 500;
+      margin-top: 2px;
+      letter-spacing: -0.01em;
+    }
+
+    .platform-price {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      font-weight: 600;
+    }
+
+    .platform-name {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: #7893a8;
+      letter-spacing: 0.02em;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .platform-name i {
+      font-size: 0.65rem;
+    }
+
+    .price-value {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #1f2f3c;
+      letter-spacing: -0.02em;
+      margin-top: 2px;
+    }
+
+    .price-value.sale {
+      color: #c93e2c;
+    }
+
+    .best-price-badge {
+      display: inline-block;
+      background: #d9f0e6;
+      color: #0a5e3d;
+      font-size: 0.6rem;
+      font-weight: 800;
+      padding: 2px 8px;
+      border-radius: 30px;
+      margin-left: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    .diff-indicator {
+      font-size: 0.75rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      color: #2b6e4e;
+    }
+
+    .diff-indicator i {
+      font-size: 0.7rem;
+    }
+
+    .action-btn {
+      background: white;
+      border: 1.5px solid #d0e0ec;
+      border-radius: 40px;
+      padding: 0.5rem 1rem;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #1f3f53;
+      cursor: pointer;
+      transition: all 0.15s;
+      font-family: 'Inter', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      white-space: nowrap;
+    }
+
+    .action-btn:hover {
+      background: #eaf3fa;
+      border-color: #aac1d4;
+    }
+
+    .action-btn i {
+      font-size: 0.7rem;
+    }
+
+    /* 空状态或没有商品 */
+    .no-results {
+      text-align: center;
+      padding: 3rem 1rem;
+      background: #fbfdff;
+      border-radius: 28px;
+      color: #7b95ab;
+      font-weight: 500;
+      border: 1px dashed #bdd0df;
+    }
+
+    .no-results i {
+      font-size: 2.2rem;
+      margin-bottom: 1rem;
+      opacity: 0.6;
+    }
+
+    /* 底部 */
+    .footer-note {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 1.5rem;
+      font-size: 0.75rem;
+      color: #7a94a9;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .footer-note a {
+      color: #2e7d5e;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .footer-note a:hover {
+      text-decoration: underline;
+    }
+
+    /* 响应式 */
+    @media (max-width: 1000px) {
+      .table-header {
+        display: none;
+      }
+
+      .product-row {
+        grid-template-columns: 1fr 1fr;
+        gap: 0.8rem;
+        padding: 1rem;
+      }
+
+      .product-info {
+        grid-column: span 2;
+      }
+
+      .platform-price {
+        background: #f8fcff;
+        padding: 0.6rem 0.8rem;
+        border-radius: 18px;
+      }
+
+      .action-btn {
+        justify-self: start;
+      }
+    }
+
+    @media (max-width: 600px) {
+      body {
+        padding: 0.8rem;
+      }
+
+      .price-compare-card {
+        padding: 1.5rem 1rem;
+        border-radius: 24px;
+      }
+
+      .header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .search-section {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .category-filters {
+        overflow-x: auto;
+        padding-bottom: 6px;
+        flex-wrap: nowrap;
+      }
+
+      .sort-bar {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .product-row {
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+
+      .product-info {
+        grid-column: span 1;
+      }
+
+      .platform-price {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        background: #f2f8fe;
+        padding: 0.5rem 1rem;
+      }
+
+      .price-value {
+        margin-top: 0;
+      }
+
+      .action-btn {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="price-compare-card">
+      <!-- 头部 -->
+      <div class="header">
+        <div class="logo-area">
+          <div class="logo-icon">
+            <i class="fas fa-scale-balanced"></i>
+          </div>
+          <div class="logo-text">
+            <h1>比价小站</h1>
+            <p>实时对比 · 聪明消费</p>
+          </div>
+        </div>
+        <div class="stats-badge">
+          <i class="fas fa-rotate"></i> 更新于 2 分钟前
+        </div>
+      </div>
+
+      <!-- 搜索和筛选 -->
+      <div class="search-section">
+        <div class="search-wrapper">
+          <i class="fas fa-search"></i>
+          <input type="text" id="searchInput" placeholder="搜索商品 (例如: iPhone, 耳机, 咖啡机...)" autocomplete="off">
+        </div>
+        <div class="category-filters" id="categoryFilters">
+          <span class="filter-chip active" data-category="all">全部</span>
+          <span class="filter-chip" data-category="electronics">📱 数码</span>
+          <span class="filter-chip" data-category="appliance">⚡ 家电</span>
+          <span class="filter-chip" data-category="lifestyle">☕ 生活</span>
+        </div>
+      </div>
+
+      <!-- 排序 + 结果计数 -->
+      <div class="sort-bar">
+        <div class="result-count">
+          找到 <strong id="resultCount">6</strong> 件商品 · 最低价用 <span style="background:#d9f0e6; color:#0a5e3d; padding:2px 8px; border-radius:30px; font-size:0.7rem; font-weight:800;">最佳</span> 标记
+        </div>
+        <div class="sort-options">
+          <button class="sort-btn active" data-sort="default"><i class="fas fa-list"></i> 默认</button>
+          <button class="sort-btn" data-sort="price-asc"><i class="fas fa-arrow-up-wide-short"></i> 价格从低到高</button>
+          <button class="sort-btn" data-sort="price-desc"><i class="fas fa-arrow-down-wide-short"></i> 价格从高到低</button>
+        </div>
+      </div>
+
+      <!-- 商品对比列表 -->
+      <div class="comparison-table" id="comparisonTable">
+        <!-- 表头 (仅桌面) -->
+        <div class="table-header">
+          <div>商品</div>
+          <div>京东</div>
+          <div>天猫</div>
+          <div>拼多多</div>
+          <div>苏宁</div>
+          <div>操作</div>
+        </div>
+        <!-- 动态生成商品行会插入到这里 (通过JS) -->
+      </div>
+
+      <!-- 空状态 (默认隐藏) -->
+      <div class="no-results" id="noResults" style="display: none;">
+        <i class="fas fa-box-open"></i>
+        <p>没有找到匹配的商品，试试其他关键词吧</p>
+      </div>
+
+      <!-- 底部信息 -->
+      <div class="footer-note">
+        <span><i class="fas fa-circle-info"></i> 价格数据为模拟演示，实际比价请以电商平台为准</span>
+        <a href="#"><i class="fas fa-arrow-up-right-from-square"></i> 价格历史</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function() {
+      // ---------- 商品模拟数据 ----------
+      const products = [
+        {
+          id: 1,
+          name: 'iPhone 15 Pro',
+          desc: '256GB · 原色钛金属',
+          emoji: '📱',
+          category: 'electronics',
+          prices: {
+            jd: 8999,
+            tmall: 8899,
+            pdd: 8699,
+            suning: 9099
+          }
+        },
+        {
+          id: 2,
+          name: '索尼 WH-1000XM5',
+          desc: '头戴式降噪耳机 · 黑色',
+          emoji: '🎧',
+          category: 'electronics',
+          prices: {
+            jd: 2499,
+            tmall: 2399,
+            pdd: 2299,
+            suning: 2599
+          }
+        },
+        {
+          id: 3,
+          name: '戴森 V12 Detect',
+          desc: '轻量吸尘器 · 2024款',
+          emoji: '🌀',
+          category: 'appliance',
+          prices: {
+            jd: 3799,
+            tmall: 3699,
+            pdd: 3499,
+            suning: 3899
+          }
+        },
+        {
+          id: 4,
+          name: '德龙 ECAM 22.110',
+          desc: '全自动咖啡机 · 意式',
+          emoji: '☕',
+          category: 'lifestyle',
+          prices: {
+            jd: 3299,
+            tmall: 3199,
+            pdd: 3049,
+            suning: 3399
+          }
+        },
+        {
+          id: 5,
+          name: 'iPad Air 5',
+          desc: '10.9英寸 · 64GB · 蓝色',
+          emoji: '📟',
+          category: 'electronics',
+          prices: {
+            jd: 4399,
+            tmall: 4299,
+            pdd: 4099,
+            suning: 4499
+          }
+        },
+        {
+          id: 6,
+          name: '小米 空气净化器 4 Pro',
+          desc: '除甲醛 · 智能控制',
+          emoji: '💨',
+          category: 'appliance',
+          prices: {
+            jd: 1299,
+            tmall: 1199,
+            pdd: 1099,
+            suning: 1399
+          }
+        }
+      ];
+
+      // 平台键名和显示名映射
+      const platformMap = {
+        jd: '京东',
+        tmall: '天猫',
+        pdd: '拼多多',
+        suning: '苏宁'
+      };
+
+      // 平台图标类
+      const platformIcons = {
+        jd: 'fa-solid fa-shop',
+        tmall: 'fa-solid fa-cart-shopping',
+        pdd: 'fa-solid fa-tag',
+        suning: 'fa-solid fa-store'
+      };
+
+      // DOM 元素
+      const comparisonTable = document.getElementById('comparisonTable');
+      const noResultsDiv = document.getElementById('noResults');
+      const resultCountSpan = document.getElementById('resultCount');
+      const searchInput = document.getElementById('searchInput');
+      const categoryFilters = document.getElementById('categoryFilters');
+      const sortBtns = document.querySelectorAll('.sort-btn');
+
+      // 当前筛选和排序状态
+      let currentCategory = 'all';
+      let currentSearchTerm = '';
+      let currentSort = 'default';   // 'default', 'price-asc', 'price-desc'
+
+      // 辅助: 获取某商品的最低价格
+      function getMinPrice(product) {
+        return Math.min(
+          product.prices.jd,
+          product.prices.tmall,
+          product.prices.pdd,
+          product.prices.suning
+        );
+      }
+
+      // 辅助: 获取最低价平台key
+      function getMinPlatform(product) {
+        const prices = product.prices;
+        let minPrice = Infinity;
+        let minPlatform = 'jd';
+        for (let p in prices) {
+          if (prices[p] < minPrice) {
+            minPrice = prices[p];
+            minPlatform = p;
+          }
+        }
+        return minPlatform;
+      }
+
+      // 格式化价格
+      function formatPrice(price) {
+        return '¥' + price.toLocaleString('zh-CN');
+      }
+
+      // 获取过滤后的商品
+      function getFilteredProducts() {
+        return products.filter(product => {
+          // 分类过滤
+          if (currentCategory !== 'all' && product.category !== currentCategory) {
+            return false;
+          }
+          // 搜索过滤
+          if (currentSearchTerm.trim() !== '') {
+            const term = currentSearchTerm.trim().toLowerCase();
+            return product.name.toLowerCase().includes(term) || product.desc.toLowerCase().includes(term);
+          }
+          return true;
+        });
+      }
+
+      // 获取排序后的商品
+      function getSortedProducts(filteredProducts) {
+        const sorted = [...filteredProducts];
+        if (currentSort === 'price-asc') {
+          sorted.sort((a, b) => getMinPrice(a) - getMinPrice(b));
+        } else if (currentSort === 'price-desc') {
+          sorted.sort((a, b) => getMinPrice(b) - getMinPrice(a));
+        }
+        // 'default' 保持原有顺序（或者可以按id排序）
+        return sorted;
+      }
+
+      // 渲染商品行
+      function renderProducts() {
+        const filtered = getFilteredProducts();
+        const sorted = getSortedProducts(filtered);
+
+        // 更新结果计数
+        resultCountSpan.textContent = sorted.length;
+
+        // 清空表格（保留表头）
+        // 但表头是 .table-header，我们需要保留它，其他 .product-row 删除
+        const rows = comparisonTable.querySelectorAll('.product-row');
+        rows.forEach(row => row.remove());
+
+        // 无结果状态
+        if (sorted.length === 0) {
+          noResultsDiv.style.display = 'block';
+          // 如果有表头保留没关系
+          return;
+        } else {
+          noResultsDiv.style.display = 'none';
+        }
+
+        // 找到全局最低价(仅用于显示“最佳”标记？每行自己的最低价)
+        // 但每行只标记自己最低的那个平台，用 green badge
+        // 遍历商品生成行
+        sorted.forEach(product => {
+          const row = document.createElement('div');
+          row.className = 'product-row';
+
+          const minPrice = getMinPrice(product);
+          const minPlatform = getMinPlatform(product);
+
+          // 商品信息列
+          const productInfoDiv = document.createElement('div');
+          productInfoDiv.className = 'product-info';
+          productInfoDiv.innerHTML = `
+            <div class="product-emoji">${product.emoji}</div>
+            <div>
+              <div class="product-name">${product.name}</div>
+              <div class="product-desc">${product.desc}</div>
+            </div>
+          `;
+          row.appendChild(productInfoDiv);
+
+          // 各平台价格列 (顺序: jd, tmall, pdd, suning)
+          const platforms = ['jd', 'tmall', 'pdd', 'suning'];
+          platforms.forEach(platform => {
+            const priceDiv = document.createElement('div');
+            priceDiv.className = 'platform-price';
+
+            const isLowest = (platform === minPlatform);
+            const priceValue = product.prices[platform];
+
+            // 构建平台名称 + 图标
+            const platformNameSpan = document.createElement('span');
+            platformNameSpan.className = 'platform-name';
+            platformNameSpan.innerHTML = `<i class="${platformIcons[platform]}"></i> ${platformMap[platform]}`;
+
+            // 价格显示
+            const priceSpan = document.createElement('span');
+            priceSpan.className = 'price-value';
+            if (isLowest) {
+              priceSpan.classList.add('sale');
+            }
+            priceSpan.textContent = formatPrice(priceValue);
+
+            // 最低价加上“最佳”标记
+            if (isLowest) {
+              const badge = document.createElement('span');
+              badge.className = 'best-price-badge';
+              badge.textContent = '最佳';
+              priceSpan.appendChild(badge);
+            }
+
+            priceDiv.appendChild(platformNameSpan);
+            priceDiv.appendChild(priceSpan);
+            row.appendChild(priceDiv);
+          });
+
+          // 操作列 (比价/查看详情按钮)
+          const actionDiv = document.createElement('div');
+          actionDiv.style.display = 'flex';
+          actionDiv.style.justifyContent = 'flex-start';
+          const actionBtn = document.createElement('button');
+          actionBtn.className = 'action-btn';
+          actionBtn.innerHTML = `<i class="fas fa-arrow-up-right-from-square"></i> 比价`;
+          // 点击提示 (模拟)
+          actionBtn.addEventListener('click', () => {
+            alert(`🔍 正在比较「${product.name}」的价格，最低价出现在 ${platformMap[minPlatform]}：${formatPrice(minPrice)}`);
+          });
+          actionDiv.appendChild(actionBtn);
+          row.appendChild(actionDiv);
+
+          comparisonTable.appendChild(row);
+        });
+      }
+
+      // 初始化渲染
+      renderProducts();
+
+      // ---------- 事件监听 ----------
+
+      // 搜索输入 (防抖，不过简单场景直接监听)
+      searchInput.addEventListener('input', (e) => {
+        currentSearchTerm = e.target.value;
+        renderProducts();
+      });
+
+      // 分类筛选
+      categoryFilters.addEventListener('click', (e) => {
+        const chip = e.target.closest('.filter-chip');
+        if (!chip) return;
+
+        // 移除所有 active
+        document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+
+        const category = chip.getAttribute('data-category');
+        currentCategory = category;
+        renderProducts();
+      });
+
+      // 排序按钮
+      sortBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          // 切换 active
+          sortBtns.forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+
+          const sortType = btn.getAttribute('data-sort');
+          currentSort = sortType;
+          renderProducts();
+        });
+      });
+
+      // 额外: 点击“价格历史”等只是演示，无实际功能
+      // 但是为了更友好，控制台不报错
+      document.querySelector('.footer-note a').addEventListener('click', (e) => {
+        e.preventDefault();
+        alert('📈 价格历史趋势图 (演示功能)');
+      });
+
+    })();
+  </script>
+</body>
+</html>
